@@ -8,13 +8,22 @@ def main(config):
     state = torch.load(model_path, map_location="cpu", weights_only=False)
     for k, v in state["actor"].items():
         print(k, v.shape)
+    for k, v in state["critic"].items():
+        print(k, v.shape)
     for k, v in state["world_model"].items():
-        if "rssm" in k:
-            print(k, v.shape)
+        print(k, v.shape)
     if config.configuration == 0:
         pass
-    elif config.configuration == 1: # replace actor head, TODO STILL
-        state["actor"]["mlp_heads.0.weight"].apply(uniform_init_weights(1.0))
+    elif config.configuration == 1: # replace actor head, critic, reward, continue heads
+        uniform_init_weights(state["actor"], "mlp_heads.0.weight", 1.0)
+        uniform_init_weights(state["critic"], list(state["critic"].keys())[-1], 0.0) # accesses the last linear layer of the critic (specifically the weight and the bias)
+        uniform_init_weights(state["critic"], list(state["critic"].keys())[-2], 0.0)
+        reward_model_keys = [key for key in state["world_model"].keys() if "reward_model" in key]
+        uniform_init_weights(state["world_model"], reward_model_keys[-1], 0.0) # accesses the last linear layer of the reward model
+        uniform_init_weights(state["world_model"], reward_model_keys[-2], 0.0)
+        continue_model_keys = [key for key in state["world_model"].keys() if "continue_model" in key]
+        uniform_init_weights(state["world_model"], continue_model_keys[-1], 1.0) # accesses the last linear layer of the continue model
+        uniform_init_weights(state["world_model"], continue_model_keys[-2], 1.0)
     elif config.configuration == 2: # replace entire actor
         state["actor"].apply(init_weights)
     elif config.configuration == 3: # replace encoder last and decoder first
