@@ -10,7 +10,7 @@ def init_weights(state_dict, keyname):
         scale = 1.0 / denoms
         std = np.sqrt(scale) / 0.87962566103423978
         nn.init.trunc_normal_(param, mean=0.0, std=std, a=-2.0 * std, b=2.0 * std)
-    elif param.dim() == 2:
+    elif param.dim() == 4:
         out_ch, in_ch, k1, k2 = param.shape
         space = k1 * k2
         in_num = space * in_ch
@@ -20,7 +20,7 @@ def init_weights(state_dict, keyname):
         std = np.sqrt(scale) / 0.87962566103423978
         nn.init.trunc_normal_(param, mean=0.0, std=std, a=-2.0, b=2.0)
     if param.dim() == 1:
-        if "layer_norm" in keyname:
+        if "weight" in keyname:
             param.fill_(1.0)
         else: # bias
             param.fill_(0.0)
@@ -36,7 +36,7 @@ def uniform_init_weights(state_dict, keyname, given_scale):
         limit = np.sqrt(3 * scale)
         nn.init.uniform_(param, a=-limit, b=limit)
     if param.dim() == 1:
-        if "layer_norm" in keyname:
+        if "weight" in keyname:
             param.fill_(1.0)
         else: # bias
             param.fill_(0.0)
