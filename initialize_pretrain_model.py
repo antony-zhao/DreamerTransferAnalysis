@@ -15,12 +15,6 @@ world_model_enc_keys = [key for key in initial_model_state["world_model"].keys()
 world_model_dec_keys = [key for key in initial_model_state["world_model"].keys() if "decoder" in key]
 enc_keys = list(encoder_model_state.keys())
 dec_keys = list(decoder_model_state.keys())
-for i in range(len(world_model_enc_keys)):
-    print(initial_model_state["world_model"][world_model_enc_keys[i]].shape, end=' ')
-    print(encoder_model_state[enc_keys[i]].shape)
-for i in range(2, len(world_model_dec_keys)):
-    print(initial_model_state["world_model"][world_model_dec_keys[i]].shape, end=' ')
-    print(decoder_model_state[dec_keys[i]].shape)
 
 for key1 in ['world_model', 'actor', 'critic']:
     for key2 in list(initial_model_state[key1].keys()):
@@ -43,6 +37,12 @@ uniform_init_weights(initial_model_state["world_model"], transition_keys[-1], 1.
 uniform_init_weights(initial_model_state["world_model"], transition_keys[-2], 1.0)
 rssm_keys = [key for key in initial_model_state["world_model"].keys() if "rssm_model" in key]
 initial_model_state['target_critic'] = initial_model_state['critic'].copy()
+
+
+for i in range(len(world_model_enc_keys)):
+    initial_model_state["world_model"][world_model_enc_keys[i]] = encoder_model_state[enc_keys[i]]
+for i in range(2, len(world_model_dec_keys)):
+    initial_model_state["world_model"][world_model_dec_keys[i]] = decoder_model_state[dec_keys[i]]
 
 initial_model_state["iter_num"] = 0
 initial_model_state['last_log'] = 0
