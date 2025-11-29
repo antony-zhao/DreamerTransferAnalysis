@@ -136,12 +136,17 @@ encoder = Encoder().to(device)
 decoder = Decoder().to(device)
 opt = torch.optim.Adam(list(encoder.parameters()) + list(decoder.parameters()), 1e-4)
 losses = []
-for _ in range(100000):
+for _ in range(20000):
     images, _ = next(iter(dataloader))
     images = images.to(device)
     latent = encoder(images)
     reconstruction = decoder(latent)
     loss = nn.functional.mse_loss(images, reconstruction)
     losses.append(loss.detach().cpu().numpy())
+    loss.backward()
+    opt.step()
+    opt.zero_grad()
 plt.plot(losses)
 plt.savefig("pretraining.png")
+torch.save(encoder.state_dict(), "pretrained_encoder.ckpt")
+torch.save(decoder.state_dict(), "pretrained_decoder.ckpt")

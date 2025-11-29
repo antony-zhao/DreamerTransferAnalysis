@@ -2,7 +2,8 @@ import torch
 from dreamer_init_weights import *
 
 def init_heads(state):
-    uniform_init_weights(state["actor"], "mlp_heads.0.weight", 1.0)
+    uniform_init_weights(state["actor"], list(state["actor"].keys())[-1], 1.0)
+    uniform_init_weights(state["actor"], list(state["actor"].keys())[-2], 1.0)
     uniform_init_weights(state["critic"], list(state["critic"].keys())[-1], 0.0) # accesses the last linear layer of the critic (specifically the weight and the bias)
     uniform_init_weights(state["critic"], list(state["critic"].keys())[-2], 0.0)
     reward_model_keys = [key for key in state["world_model"].keys() if "reward_model" in key]
@@ -54,9 +55,9 @@ def main(config):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model_path", type=str)
-    parser.add_argument("--new_path", type=str)
-    parser.add_argument("--configuration", type=int, choices=[0, 1, 2]) 
+    parser.add_argument("--model_path", default="assault_checkpoint.ckpt", type=str)
+    parser.add_argument("--new_path", default="temp.ckpt", type=str)
+    parser.add_argument("--configuration", default=0, type=int, choices=[0, 1, 2]) 
     config = parser.parse_args()
     main(config)
     # 0 is basically no change outside of resetting some parameters
