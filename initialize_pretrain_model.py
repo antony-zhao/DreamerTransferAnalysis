@@ -17,6 +17,7 @@ enc_keys = list(encoder_model_state.keys())
 dec_keys = list(decoder_model_state.keys())
 
 for key1 in ['world_model', 'actor', 'critic']:
+    # print(initial_model_state[key1].keys())
     for key2 in list(initial_model_state[key1].keys()):
         init_weights(initial_model_state[key1], key2)
 uniform_init_weights(initial_model_state["actor"], list(initial_model_state["actor"].keys())[-1], 1.0)
@@ -35,17 +36,17 @@ uniform_init_weights(initial_model_state["world_model"], rep_keys[-2], 1.0)
 transition_keys = [key for key in initial_model_state["world_model"].keys() if "transition_model" in key]
 uniform_init_weights(initial_model_state["world_model"], transition_keys[-1], 1.0)
 uniform_init_weights(initial_model_state["world_model"], transition_keys[-2], 1.0)
-rssm_keys = [key for key in initial_model_state["world_model"].keys() if "rssm_model" in key]
+initial_model_state['world_model']['rssm.initial_recurrent_state'] = torch.zeros_like(initial_model_state['world_model']['rssm.initial_recurrent_state'])
 initial_model_state['target_critic'] = initial_model_state['critic'].copy()
 
 
 for i in range(len(world_model_enc_keys)):
     initial_model_state["world_model"][world_model_enc_keys[i]] = encoder_model_state[enc_keys[i]]
-for i in range(2, len(world_model_dec_keys)):
-    initial_model_state["world_model"][world_model_dec_keys[i]] = decoder_model_state[dec_keys[i]]
+# for i in range(2, len(world_model_dec_keys)):
+#     initial_model_state["world_model"][world_model_dec_keys[i]] = decoder_model_state[dec_keys[i]]
 
 initial_model_state["iter_num"] = 0
 initial_model_state['last_log'] = 0
 initial_model_state['last_checkpoint'] = 0
 
-torch.save(initial_model_state, 'imagenet_pretrained.ckpt')
+torch.save(initial_model_state, 'imagenet_enc_only.ckpt')
