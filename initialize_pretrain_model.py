@@ -42,8 +42,8 @@ initial_model_state['target_critic'] = initial_model_state['critic'].copy()
 
 for i in range(len(world_model_enc_keys)):
     initial_model_state["world_model"][world_model_enc_keys[i]] = encoder_model_state[enc_keys[i]]
-# for i in range(2, len(world_model_dec_keys)):
-#     initial_model_state["world_model"][world_model_dec_keys[i]] = decoder_model_state[dec_keys[i]]
+for i in range(2, len(world_model_dec_keys)):
+    initial_model_state["world_model"][world_model_dec_keys[i]] = decoder_model_state[dec_keys[i]]
 
 initial_model_state["iter_num"] = 0
 initial_model_state['last_log'] = 0
